@@ -19,6 +19,9 @@ const EditRoleCard = () => {
     { name: "products" },
     { name: "tasks" },
     { name: "teams" },
+    { name: "roles" },
+    { name: "blogs" },
+
   ]);
 
   useEffect(() => {
@@ -100,7 +103,7 @@ const EditRoleCard = () => {
   };
 
   return (
-    <div className="relative px-4 w-full max-w-md max-h-full">
+    <div className="relative px-4 w-full  max-h-full">
       <div className="relative h-full bg-white rounded-lg shadow">
         <div className="flex items-center justify-between p-4 md:p-5 border-b rounded-t">
           <h3 className="text-lg font-semibold text-gray-900">Update Role</h3>
@@ -161,7 +164,7 @@ const EditRoleCard = () => {
                     {page.name}
                   </h4>
                   <div className="flex gap-4 flex-[6]">
-                    {["view", "edit", "delete"].map((permission) => (
+                    {["create","view", "edit", "delete" ].map((permission) => (
                       <label key={permission} className="flex items-center">
                         <input
                           type="checkbox"

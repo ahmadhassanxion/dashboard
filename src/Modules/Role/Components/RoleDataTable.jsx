@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import axiosInstance from "../../../Utils/axios";
 import DeleteBtn from "../../../Components/DeleteBtn";
 import EditBtn from "../../../Components/EditBtn";
+import { useSelector } from "react-redux";
 
 const columns = [
   { field: "id", headerName: "ID", width: 90 },
@@ -55,7 +56,7 @@ const columns = [
 
 const RoleDataTable = () => {
   const [users, setUsers] = useState([]);
-
+   const GlobalRender = useSelector((state) => state.GlobalSlice);
   useEffect(() => {
     const fetchRoles = async () => {
       try {
@@ -72,7 +73,7 @@ const RoleDataTable = () => {
     };
 
     fetchRoles();
-  }, []);
+  }, [GlobalRender]);
 
   return (
     <Box sx={{ height: "100%", width: "100%" }}>

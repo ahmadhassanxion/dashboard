@@ -1,0 +1,14 @@
+.blog-content {
+  max-height: 110px; /* Limit the height to 200px */
+  overflow: hidden;  /* Hide overflowed content */
+  position: relative; /* To position the 'Read More' button */
+}
+
+.blog-content::after {
+  content: '...'; /* Add ellipsis at the end of the truncated content */
+  position: absolute;
+  bottom: 5px;
+  right: 0;
+  background: white; /* Ensure it matches the background color */
+  padding: 0 5px; /* Adjust as needed */
+}

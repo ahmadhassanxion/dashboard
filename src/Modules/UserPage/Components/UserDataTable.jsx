@@ -5,7 +5,9 @@ import axiosInstance from "../../../Utils/axios";
 import DeleteBtn from "../../../Components/DeleteBtn";
 import EditBtn from "../../../Components/EditBtn";
 import { useSelector } from "react-redux";
-
+import hasPermission from "../../../helper/PermissionCheck";
+const canDeleteUsers = hasPermission("users", "delete");
+const canEditUsers = hasPermission("users", "edit");
 const columns = [
   { field: "id", headerName: "ID", width: 90 },
   {
@@ -46,8 +48,8 @@ const columns = [
     width: 160,
     renderCell: (params) => (
       <div className="flex gap-2">
-      <DeleteBtn id={params.row.id} route="users/deleteUser" name={params.row.name}/>
-      <EditBtn id={params.row.id} route="singleUser"/>
+    {canDeleteUsers &&  <DeleteBtn id={params.row.id} route="users/deleteUser" name={params.row.name}/>}
+     {canEditUsers && <EditBtn id={params.row.id} route="singleUser"/>}
       </div>
     ),
   },

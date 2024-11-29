@@ -2,9 +2,12 @@
 import toast from "react-hot-toast";
 import axiosInstance from "../Utils/axios";
 import { FaTrashCan } from "react-icons/fa6";
+import { useDispatch } from "react-redux";
+import { updateGlobal } from "../Modules/Global/GlobalSlice";
 
 
 const DeleteBtn = ({id,route, name}) => {
+  const dispatch = useDispatch();
 
     const handleDelete = async()=>{
         try{
@@ -12,6 +15,7 @@ const DeleteBtn = ({id,route, name}) => {
            
                 toast.success(`${name} Deleted Successfully`);
                 console.log(response);
+                dispatch(updateGlobal());
 
         }catch(err){
             toast.error("Something went wrong");

@@ -22,6 +22,7 @@ const UserEditForm = () => {
     email: "",
     password: "",
     phone: "",
+    isAdmin: false,
     role: "",
   });
 
@@ -31,6 +32,7 @@ const UserEditForm = () => {
       email: user.email || "",
       password: user.password || "",
       phone: user.phone || "",
+      isAdmin: user.isAdmin || false,
       role: user.role._id || "",
     });
   }, [user]);
@@ -38,6 +40,7 @@ const UserEditForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      console.log(data);
       
 
       const response = await axiosInstance.put(
@@ -133,14 +136,16 @@ const UserEditForm = () => {
               </label>
               <input
                 type={view ? "text" : "password"}
-                name="password"
+                // name="password"
                 id="password"
                 onChange={(e) => setData({ ...data, password: e.target.value })}
                 // value={data.password}
                 className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 "
+                name="new-password"
+                autoComplete='new-password'
                 required
               />
-              <div className="flex items-start mb-6 ml-[5px] mt-[5px]">
+              <div className="flex items-start  ml-[5px] mt-[5px]">
                 <div className="flex items-center h-5">
                   <input
                     id="view-password"
@@ -176,6 +181,28 @@ const UserEditForm = () => {
                 placeholder="0311-456-7890"
                 required
               />
+            </div>
+            <div className="col-span-2">
+              <label
+                htmlFor="admin"
+                className="block mb-2 text-sm font-medium text-gray-900"
+              >
+                Admin Privileges
+              </label>
+              <select
+                id="admin"
+                required
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5"
+                value={data.isAdmin}
+                onChange={
+                  (e) =>
+                    setData({ ...data, isAdmin: e.target.value === "true" }) // Convert string to boolean
+                }
+              >
+                <option value="">Select Admin Status</option>
+                <option value="true">Grant Admin Privileges</option>
+                <option value="false">Revoke Admin Privileges</option>
+              </select>
             </div>
           </div>
           <button

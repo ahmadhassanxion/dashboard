@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import axiosInstance from "../../../Utils/axios";
 import toast from "react-hot-toast";
+import { useDispatch } from "react-redux";
+import { updateGlobal } from "../../Global/GlobalSlice";
 
 const AddRole = () => {
   const [toggle, setToggle] = useState(false);
@@ -9,9 +11,14 @@ const AddRole = () => {
     description: "",
     permissions: {}, // Permissions for each page
   });
-
+const dispatch = useDispatch();
   const [availablePages, setAvailablePages] = useState([
-    {name:"users"},{name:"products"},{name:"tasks"},{name:"teams"}
+    { name: "users" },
+    { name: "products" },
+    { name: "tasks" },
+    { name: "teams" },
+    { name: "roles" },
+    { name: "blogs" },
   ]);
 
 
@@ -77,6 +84,7 @@ const AddRole = () => {
          permissions: {},
        });
        toast.success("Role Created Successfully!");
+       dispatch(updateGlobal());
        setToggle(!toggle);
      }
    } catch (err) {
@@ -192,7 +200,7 @@ const AddRole = () => {
                           {page.name}
                         </h4>
                         <div className="flex gap-4 flex-[8]">
-                          {["view", "edit", "delete"].map((permission) => (
+                          {["create","view", "edit", "delete" ,].map((permission) => (
                             <label
                               key={permission}
                               className="flex items-center"

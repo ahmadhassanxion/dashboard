@@ -20,7 +20,7 @@ if (now.isBefore(endDate)) {
   const hours = duration.hours();
   const minutes = duration.minutes();
   return (
-    <div>
+    <div >
       {days > 0 && `${days}d `}
       {hours > 0 && `${hours}h `}
       {minutes > 0 && `${minutes}m`}
@@ -28,7 +28,7 @@ if (now.isBefore(endDate)) {
   );
 } else {
   return (
-    <div>
+    <div className="flex gap-2">
       <div>Ended {endDate.fromNow()}</div>
       <div>({endDate.format("MMMM Do YYYY, h:mm:ss a")})</div>
     </div>
@@ -42,18 +42,21 @@ if (now.isBefore(endDate)) {
         <div className="overflow-hidden w-full max-h-[300px] flex gap-8 justify-center items-center rounded-md shadow-lg border-gray-100 mb-3">
           <div className="flex-[8] p-3">
             <h2 className="text-3xl font-semibold mb-2">{task.name}</h2>
-            <ul className="flex justify-start items-center gap-2">
-              <li className="text-[20px]  flex-1 flex gap-3 ">
+            <ul className="flex justify-start items-start flex-col gap-2">
+              <div className="flex flex-1 w-full">
+              <li className="text-[20px]  flex-1 flex gap-3  ">
                 <span className="font-semibold"> Priority:</span>
                 <div>{task.priority}</div>
-              </li>
-              <li className="text-[20px] flex-1 flex gap-3 ">
-                <span className="font-semibold">End Time:</span>
-                {xenoDate(task.endDate)}
               </li>
               <li className="text-[20px]  flex-1 flex gap-3 ">
                 <span className="font-semibold">Status:</span>
                 <div>{task.status}</div>
+              </li>
+
+              </div>
+              <li className="text-[20px] flex-1 flex gap-3 w-full">
+                <span className="font-semibold">End Time:</span>
+                {xenoDate(task.endDate)}
               </li>
             </ul>
           </div>

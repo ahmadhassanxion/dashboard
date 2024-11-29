@@ -5,6 +5,8 @@ import SingleUserSlice from "../Modules/UserPage/SingleUserSlice.js";
 import SingleTeamSlice from "../Modules/Team/SingleTeamSlice.js";
 import SingleTaskSlice from "../Modules/Task/SingleTaskSlice.js";
 import SingleRoleSlice from "../Modules/Role/SingleRoleSlice.js";
+import SingleProductSlice from "../Modules/Product/SingleProductSlice.js";
+import SinglePostSlice from "../Modules/Blog/SinglePostSlice.js";
 const store = configureStore({
   reducer: {
     GlobalSlice,
@@ -13,6 +15,8 @@ const store = configureStore({
     SingleTeamSlice,
     SingleTaskSlice,
     SingleRoleSlice,
+    SingleProductSlice,
+    SinglePostSlice,
   },
 });
 
