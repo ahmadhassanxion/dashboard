@@ -1,17 +1,17 @@
 import React, { useState, useEffect } from "react";
 import axiosInstance from "../../../Utils/axios";
-import toast from "react-hot-toast";
+import { showSuccessAlert, showErrorAlert } from "../../../Utils/SwalAlert";
 import { useDispatch } from "react-redux";
 import { updateGlobal } from "../../Global/GlobalSlice";
 import { TagsInput } from "react-tag-input-component";
 
 const AddProduct = () => {
   const [toggle, setToggle] = useState(false);
-  const UserData =JSON.parse(localStorage.getItem("userData"));
+  const UserData = JSON.parse(localStorage.getItem("userData"));
   const userId = UserData._id;
   // console.log(UserData._id);
   const dispatch = useDispatch();
-  const [categories, setCategories] = useState(["icon","illustration"]);
+  const [categories, setCategories] = useState(["icon", "illustration"]);
   const [allUsers, setAllUsers] = useState([]);
   const [product, setProduct] = useState({
     name: "",
@@ -21,8 +21,6 @@ const AddProduct = () => {
     category: "",
     items: [],
   });
-
-  
 
   const handleProductChange = (e) => {
     const { name, value } = e.target;
@@ -51,109 +49,119 @@ const AddProduct = () => {
       ...product,
       items: [
         ...product.items,
-        { name: "", tags: [], file: null, uploadedBy: userId }, 
+        { 
+          name: "", 
+          tags: [], 
+          file: null, 
+          uploadedBy: userId,
+          type: product.type,
+          category: product.category,
+          status: "active",
+          tone: product.tone,
+        }, 
       ],
     });
   };
 
-
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  try {
-    // Validate product fields
-    if (
-      !product.name ||
-      !product.description ||
-      !product.tone ||
-      !product.type ||
-      !product.category
-    ) {
-      toast.error("Please fill all product fields");
-      return;
-    }
-
-    if (product.items.length === 0) {
-      toast.error("Please add at least one item");
-      return;
-    }
-
-    // Create a FormData object to prepare data for the product
-    const formData = new FormData();
-    formData.append("name", product.name);
-    formData.append("userId", UserData._id);
-    formData.append("description", product.description);
-    formData.append("tone", product.tone);
-    formData.append("type", product.type);
-    formData.append("category", product.category);
-
-    // Array to store item IDs
-    let itemIds = [];
-
-    // Create all items and collect their IDs
-    await Promise.all(
-      product.items.map(async (item) => {
-        // Prepare form data for each item separately
-        const itemFormData = new FormData();
-        itemFormData.append("name", item.name);
-        itemFormData.append("uploadedBy", item.uploadedBy);
-        item.tags.forEach((tag, tagIndex) => {
-          itemFormData.append(`tags[${tagIndex}]`, tag);
-        });
-        if (item.file) {
-          itemFormData.append("file", item.file);
-        }
-
-        // Send request to create an item
-        const response = await axiosInstance.post(
-          "/api/items/createItem",
-          item,
-          {
-           headers: {"Content-Type": "multipart/form-data"},
-          }
-        );
-        console.log(response);
-
-        // Collect the item ID from response
-        itemIds.push(response.data._id); // Assuming response.data.itemId contains the created item ID
-      })
-    );
-
-    // After all items are created, add their IDs to the product form data
-    itemIds.forEach((itemId, index) => {
-      formData.append(`items[${index}]`, itemId);
-    });
-
-    // Submit the product with all collected item IDs
-    const response = await axiosInstance.post(
-      "/api/products/createProduct",
-      formData,
-      {
-        // No need to manually set headers here
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      // Validate product fields
+      if (
+        !product.name ||
+        !product.description ||
+        !product.tone ||
+        !product.type ||
+        !product.category
+      ) {
+        showErrorAlert("Please fill all product fields");
+        return;
       }
-    );
 
-    if (response.data.status === 402) {
-      toast.error("Error in creating product!");
-    } else {
-      toast.success("Product Created Successfully!");
-      dispatch(updateGlobal());
-      setToggle(false);
-      setProduct({
-        name: "",
-        description: "",
-        tone: "",
-        type: "",
-        category: "",
-        items: [],
+      if (product.items.length === 0) {
+        showErrorAlert("Please add at least one item");
+        return;
+      }
+
+      // Create a FormData object to prepare data for the product
+      const formData = new FormData();
+      formData.append("name", product.name);
+      formData.append("userId", UserData._id);
+      formData.append("description", product.description);
+      formData.append("tone", product.tone);
+      formData.append("type", product.type);
+      formData.append("category", product.category);
+
+      // Array to store item IDs
+      let itemIds = [];
+
+      // Create all items and collect their IDs
+      await Promise.all(
+        product.items.map(async (item) => {
+          // Prepare form data for each item separately
+          const itemFormData = new FormData();
+          itemFormData.append("name", item.name);
+          itemFormData.append("uploadedBy", item.uploadedBy);
+          itemFormData.append("type", product.type);
+          itemFormData.append("category", product.category);
+          itemFormData.append("status", "active");
+          itemFormData.append("tone", product.tone);
+          item.tags.forEach((tag, tagIndex) => {
+            itemFormData.append(`tags[${tagIndex}]`, tag);
+          });
+          if (item.file) {
+            itemFormData.append("file", item.file);
+          }
+
+          // Send request to create an item
+          const response = await axiosInstance.post(
+            "/api/items/createItem",
+            itemFormData,
+            {
+              headers: { "Content-Type": "multipart/form-data" },
+            }
+          );
+          console.log(response);
+
+          // Collect the item ID from response
+          itemIds.push(response.data._id); // Assuming response.data.itemId contains the created item ID
+        })
+      );
+
+      // After all items are created, add their IDs to the product form data
+      itemIds.forEach((itemId, index) => {
+        formData.append(`items[${index}]`, itemId);
       });
+
+      // Submit the product with all collected item IDs
+      const response = await axiosInstance.post(
+        "/api/products/createProduct",
+        formData,
+        {
+          // No need to manually set headers here
+        }
+      );
+
+      if (response.data.status === 402) {
+        showErrorAlert("Error in creating product!");
+      } else {
+        showSuccessAlert("Product Created Successfully!");
+        dispatch(updateGlobal());
+        setToggle(false);
+        setProduct({
+          name: "",
+          description: "",
+          tone: "",
+          type: "",
+          category: "",
+          items: [],
+        });
+      }
+    } catch (err) {
+      showErrorAlert("Error While Creating Product!");
+      console.log(err);
     }
-  } catch (err) {
-    toast.error("Error While Creating Product!");
-    console.log(err);
-  }
-};
-
-
+  };
 
   return (
     <div>
@@ -285,7 +293,6 @@ const handleSubmit = async (e) => {
                     <option value="semiSolid">Semi-Solid</option>
                     <option value="semiSolid">Stroke</option>
                   </select>
-                  
                 </div>
 
                 <div className="col-span-2">
@@ -371,6 +378,8 @@ const handleSubmit = async (e) => {
                          focus:outline-none  "
                       />
                     </div>
+
+                   
                   </div>
                 </div>
               ))}

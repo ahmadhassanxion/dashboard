@@ -30,7 +30,7 @@ const UserEditForm = () => {
     setData({
       name: user.name || "",
       email: user.email || "",
-      password: user.password || "",
+      password: "",
       phone: user.phone || "",
       isAdmin: user.isAdmin || false,
       role: user.role._id || "",
@@ -143,7 +143,7 @@ const UserEditForm = () => {
                 className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 "
                 name="new-password"
                 autoComplete='new-password'
-                required
+                
               />
               <div className="flex items-start  ml-[5px] mt-[5px]">
                 <div className="flex items-center h-5">

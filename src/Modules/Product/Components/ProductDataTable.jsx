@@ -6,8 +6,10 @@ import DeleteBtn from "../../../Components/DeleteBtn";
 import EditBtn from "../../../Components/EditBtn";
 import { useSelector } from "react-redux";
 import hasPermission from "../../../helper/PermissionCheck";
+import { render } from "timeago.js";
 const canEditProduct = hasPermission("products", "edit");
 const canDeleteProduct = hasPermission("products", "delete");
+
 // Define the columns of the DataGrid
 const columns = [
   { field: "id", headerName: "ID", width: 90 },
@@ -30,6 +32,28 @@ const columns = [
     field: "category",
     headerName: "Category",
     width: 150,
+  },
+  {
+    field: "price",
+    headerName: "Price",
+    width: 150,
+    renderCell: (params) => (
+      <div className="flex items-center gap-2">
+        <span>${params.value}</span>
+      </div>
+    ),
+
+  },
+  {
+    field: "status",
+    headerName: "Status",
+    width: 120,
+  },
+  {
+    field: "published",
+    headerName: "Published",
+    width: 120,
+    type: 'boolean',
   },
   {
     field: "createdBy",
@@ -83,17 +107,27 @@ const UserDataTable = () => {
     const fetchProducts = async () => {
       try {
         const response = await axiosInstance.get("/api/products/allProducts");
-        console.log(response.data);
+        console.log("Raw response data:", response.data);
         // Map through the response data to format it for the DataGrid
-        const productsWithId = response.data.map((product) => ({
-          ...product,
-          id: product._id,
-          createdBy: product.createdBy.name,
-          items: product.items?.slice(0, 6).map((item) => item.file), // Keep items as an array of file URLs
-        }));
+        const productsWithId = response.data.map((product) => {
+          console.log("Individual product:", product);
+          return {
+            id: product._id,
+            name: product.name,
+            description: product.description,
+            type: product.type,
+            tone: product.tone,
+            category: product.category,
+            price: product.price,
+            status: product.status,
+            published: product.published,
+            createdBy: product.createdBy.name,
+            items: product.items?.slice(0, 6).map((item) => item.file),
+          };
+        });
 
-        setProducts(productsWithId); // Set the formatted data to state
-        console.log(productsWithId); // For debugging, log the formatted data
+        setProducts(productsWithId);
+        console.log("Formatted products:", productsWithId);
       } catch (err) {
         console.log(err);
       }

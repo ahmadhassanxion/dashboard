@@ -1,11 +1,14 @@
 /* eslint-disable react/prop-types */
-import  { useState } from "react";
+import React, { useState } from "react";
+import { useDispatch } from "react-redux";
 import { TagsInput } from "react-tag-input-component";
 import axiosInstance from "../../../Utils/axios";
-import toast from "react-hot-toast";
+import { updateGlobal } from "../../Global/GlobalSlice";
+import { showSuccessAlert, showErrorAlert } from "../../../Utils/SwalAlert";
 
-const ItemEditForm = ({ item, toggle, setToggle }) => {
+const ItemEditForm = ({ item, toggle, setToggle, onClose }) => {
   const [editedItem, setEditedItem] = useState(item);
+  const dispatch = useDispatch();
 
   const handleItemChange = (e) => {
     const { name, value, type, files } = e.target;
@@ -22,42 +25,39 @@ const ItemEditForm = ({ item, toggle, setToggle }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    try {
-      // Validate item fields
-      if (!editedItem.name) {
-        toast.error("Item name is required");
-        return;
-      }
+    if (!editedItem.name.trim()) {
+      showErrorAlert("Item name is required");
+      return;
+    }
 
-      // Prepare form data
+    try {
       const formData = new FormData();
       formData.append("name", editedItem.name);
-      editedItem.tags.forEach((tag, index) => {
-        formData.append(`tags[${index}]`, tag);
-      });
+      formData.append("tags", JSON.stringify(editedItem.tags));
+
       if (editedItem.file) {
         formData.append("file", editedItem.file);
       }
 
-      // Send request to update the item
       const response = await axiosInstance.put(
-        `/api/items/updateItem/${editedItem._id}`,
+        `/api/items/updateItem/${item._id}`,
         formData,
         {
-          headers: { "Content-Type": "multipart/form-data" },
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
         }
       );
 
-      if (response.data.status === 200) {
-        toast.success("Item updated successfully!");
-      
+      if (response.status === 200) {
+        showSuccessAlert("Item updated successfully!");
+        dispatch(updateGlobal());
         setToggle(false);
       } else {
-        toast.error("Failed to update item.");
+        showErrorAlert("Failed to update item.");
       }
     } catch (error) {
-      toast.error("Error while updating item.");
-      console.error(error);
+      showErrorAlert("Error while updating item.");
     }
   };
 
