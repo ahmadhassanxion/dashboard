@@ -1,8 +1,8 @@
 import axios from "axios";
 
 const axiosInstance = axios.create({
-  baseURL: "https://xeno-3dfkg42x.b4a.run",
-    // baseURL: 'http://localhost:5000',
+  // baseURL: "https://xeno-3dfkg42x.b4a.run",
+    baseURL: 'http://localhost:5000',
     
   headers: {
     "Content-Type": "application/json",

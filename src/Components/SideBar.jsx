@@ -74,6 +74,12 @@ const SideBar = ({ toggle, setToggle }) => {
           icon: <MdCategory />,
           resource: "category",
         },
+        {
+          path: "/blogs/website",
+          name: "Website",
+          icon: <MdCategory />,
+          resource: "website",
+        },
       ],
       resource: "blogs",
     },

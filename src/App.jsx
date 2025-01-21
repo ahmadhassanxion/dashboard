@@ -19,6 +19,7 @@ import Blog from "./Modules/Blog/Blog";
 import BlogCategory from "./Modules/Blog/Pages/BlogCategory";
 import SingleBlog from "./Modules/Blog/Pages/SingleBlog";
 import Chats from "./Modules/chats/Chats";
+import BlogWebsite from "./Modules/Blog/Pages/BlogWebsite";
 
 const App = () => {
   return (
@@ -45,6 +46,7 @@ const App = () => {
               <Route path="blogs" element={<Blog />} />
               <Route path="singleBlog/:id" element={<SingleBlog />} />
               <Route path="blogs/categories" element={<BlogCategory />} />
+              <Route path="blogs/website" element={<BlogWebsite />} />
               <Route path="chat" element={<Chats />} />
 
             </Route>

@@ -9,76 +9,127 @@ const AddBlog = () => {
   const [toggle, setToggle] = useState(false);
   const dispatch = useDispatch();
   const [allCategories, setAllCategories] = useState([]);
+  const [allWebsites, setAllWebsites] = useState([]);
   const editor = useRef(null); // Reference for the editor
   const [content, setContent] = useState(""); // State for editor content
   const userData = JSON.parse(localStorage.getItem("userData"));
+
   useEffect(() => {
-    const getCategories = async () => {
+    const fetchData = async () => {
       try {
-        const response = await axiosInstance.get(
-          "/api/blogs/allCategories"
-        );
-        console.log(response.data);
-        setAllCategories(response.data);
+        const [categoriesRes, websitesRes] = await Promise.all([
+          axiosInstance.get("/api/blogs/allCategories"),
+          axiosInstance.get("/api/blogs/allWebsites")
+        ]);
+        setAllCategories(categoriesRes.data);
+        setAllWebsites(websitesRes.data);
       } catch (error) {
-        console.error("Failed to fetch categories:", error);
+        console.error("Failed to fetch data:", error);
+        toast.error("Failed to fetch required data");
       }
     };
-    getCategories();
+    fetchData();
   }, []);
 
   const [data, setData] = useState({
     title: "",
+    slug: "",
     category: "",
     status: "",
     featuredImage: null,
     allowComments: false,
+    websites: [],
+    metaTitle: "",
+    metaDescription: "",
+    focusKeywords: []
   });
+
+  const [keyword, setKeyword] = useState("");
+  
+  const addKeyword = () => {
+    if (keyword.trim()) {
+      setData(prev => ({
+        ...prev,
+        focusKeywords: [...prev.focusKeywords, keyword.trim()]
+      }));
+      setKeyword("");
+    }
+  };
+
+  const removeKeyword = (index) => {
+    setData(prev => ({
+      ...prev,
+      focusKeywords: prev.focusKeywords.filter((_, i) => i !== index)
+    }));
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter' && keyword.trim()) {
+      e.preventDefault();
+      addKeyword();
+    }
+  };
+
+  const generateSlug = (title) => {
+    return title.toLowerCase()
+      .replace(/[^a-zA-Z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, ''); // Remove leading/trailing hyphens
+  };
+
+  const handleTitleChange = (e) => {
+    const newTitle = e.target.value;
+    setData(prev => ({
+      ...prev,
+      title: newTitle,
+      slug: generateSlug(newTitle)
+    }));
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // Basic validation for empty fields
-      if (!data.title || !content || !data.category || !data.featuredImage) {
+      if (!data.title || !content || !data.category || !data.featuredImage || !data.metaTitle || !data.metaDescription || data.websites.length === 0 || !data.slug) {
         toast.error("Please fill all required fields.");
         return;
       }
 
-      // FormData to handle file uploads and other data
       const formData = new FormData();
       formData.append("name", data.title);
+      formData.append("slug", data.slug);
       formData.append("content", content);
       formData.append("category", data.category);
       formData.append("status", data.status);
       formData.append("image", data.featuredImage);
       formData.append("comments", data.allowComments);
       formData.append("createdBy", userData._id);
+      formData.append("metaTitle", data.metaTitle);
+      formData.append("metaDescription", data.metaDescription);
+      // Send websites as array directly
+      data.websites.forEach((websiteId, index) => {
+        formData.append(`websites[${index}]`, websiteId);
+      });
+      formData.append("focusKeywords", JSON.stringify(data.focusKeywords));
 
-
-      const response = await axiosInstance.post(
-        "/api/blogs/createPost",
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
-
-      console.log(response);
+      const response = await axiosInstance.post("/api/blogs/createPost", formData, {
+        headers: { "Content-Type": "multipart/form-data" }
+      });
 
       if (response.data.status === 402) {
         toast.error("Blog with this title already exists!");
       } else {
-        // Reset form data
         setData({
           title: "",
+          slug: "",
           category: "",
           status: "",
           featuredImage: null,
           allowComments: false,
+          websites: [],
+          metaTitle: "",
+          metaDescription: "",
+          focusKeywords: []
         });
-        setContent(""); // Reset editor content
+        setContent("");
         toast.success("Blog created successfully!");
         dispatch(updateGlobal());
         setToggle(!toggle);
@@ -89,14 +140,14 @@ const AddBlog = () => {
     }
   };
 
- const config = useMemo(
-   () => ({
-     readonly: false, // all options from https://xdsoft.net/jodit/docs/,
-     placeholder: "Start typing...",
-     height: 500, // Set the desired height in pixels
-   }),
-   []
- );
+  const config = useMemo(
+    () => ({
+      readonly: false, // all options from https://xdsoft.net/jodit/docs/,
+      placeholder: "Start typing...",
+      height: 500, // Set the desired height in pixels
+    }),
+    []
+  );
 
   return (
     <div>
@@ -150,17 +201,31 @@ const AddBlog = () => {
                     htmlFor="title"
                     className="block mb-2 text-sm font-medium text-gray-900 "
                   >
-                    Title
+                    Title *
                   </label>
                   <input
                     type="text"
                     name="title"
                     id="title"
-                    onChange={(e) =>
-                      setData({ ...data, title: e.target.value })
-                    }
+                    onChange={handleTitleChange}
                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 "
                     placeholder="Type blog title"
+                    required
+                  />
+                </div>
+                <div className="col-span-2">
+                  <label
+                    htmlFor="slug"
+                    className="block mb-2 text-sm font-medium text-gray-900 "
+                  >
+                    Slug * <span className="text-sm text-gray-500">(Auto-generated, but you can edit)</span>
+                  </label>
+                  <input
+                    type="text"
+                    className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5"
+                    placeholder="your-blog-post-slug"
+                    value={data.slug}
+                    onChange={(e) => setData({ ...data, slug: generateSlug(e.target.value) })}
                     required
                   />
                 </div>
@@ -183,7 +248,6 @@ const AddBlog = () => {
                     <option value="">Select Status</option>
                     <option value="draft">Draft</option>
                     <option value="publish">Publish</option>
-                    =
                   </select>
                 </div>
                 <div className="col-span-1">
@@ -210,6 +274,105 @@ const AddBlog = () => {
                     ))}
                   </select>
                 </div>
+                <div className="space-y-4 md:space-y-6 col-span-2">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block mb-2 text-sm font-medium text-gray-900">
+                      Meta Title *
+                    </label>
+                    <input
+                      type="text"
+                      maxLength={60}
+                      className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5"
+                      placeholder="Enter meta title"
+                      value={data.metaTitle}
+                      onChange={(e) =>
+                        setData({ ...data, metaTitle: e.target.value })
+                      }
+                    />
+                    <small className="text-gray-500">{data.metaTitle.length}/60 characters</small>
+                  </div>
+
+                  <div>
+                    <label className="block mb-2 text-sm font-medium text-gray-900">
+                      Meta Description *
+                    </label>
+                    <textarea
+                      maxLength={160}
+                      className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5"
+                      placeholder="Enter meta description"
+                      value={data.metaDescription}
+                      onChange={(e) =>
+                        setData({ ...data, metaDescription: e.target.value })
+                      }
+                    />
+                    <small className="text-gray-500">{data.metaDescription.length}/160 characters</small>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block mb-2 text-sm font-medium text-gray-900">
+                    Websites *
+                  </label>
+                  <select
+                    multiple
+                    className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5"
+                    value={data.websites}
+                    onChange={(e) =>
+                      setData({
+                        ...data,
+                        websites: Array.from(e.target.selectedOptions, option => option.value)
+                      })
+                    }
+                  >
+                    {allWebsites.map((website) => (
+                      <option key={website._id} value={website._id}>
+                        {website.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block mb-2 text-sm font-medium text-gray-900">
+                    Focus Keywords
+                  </label>
+                  <div className="flex gap-2 mb-2">
+                    <input
+                      type="text"
+                      className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5"
+                      placeholder="Enter a focus keyword and press Enter or Add"
+                      value={keyword}
+                      onChange={(e) => setKeyword(e.target.value)}
+                      onKeyPress={handleKeyPress}
+                    />
+                    <button
+                      type="button"
+                      onClick={addKeyword}
+                      className="bg-blue-500 text-white rounded-lg px-4 whitespace-nowrap"
+                    >
+                      Add Keyword
+                    </button>
+                  </div>
+                  
+                  {data.focusKeywords.length > 0 && (
+                    <div className="mt-2 flex flex-wrap gap-2">
+                      {data.focusKeywords.map((kw, index) => (
+                        <div key={index} className="flex items-center bg-blue-100 text-blue-800 px-3 py-1 rounded-full">
+                          <span>{kw}</span>
+                          <button
+                            type="button"
+                            onClick={() => removeKeyword(index)}
+                            className="ml-2 text-blue-600 hover:text-blue-800"
+                          >
+                            ×
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
                 <div className="col-span-2">
                   <label
                     htmlFor="editor"
@@ -265,6 +428,9 @@ const AddBlog = () => {
                   </label>
                 </div>
               </div>
+          
+
+           
               <button
                 type="submit"
                 className="flex text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300  shadow-lg shadow-blue-500/50   font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2"

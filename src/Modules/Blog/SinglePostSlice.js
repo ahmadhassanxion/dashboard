@@ -1,49 +1,44 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-const singlePostSlice = createSlice({
-  name: "singlePost",
-  initialState: {
+const initialState = {
+  _id: "",
+  name: "",
+  slug: "",
+  content: "",
+  category: {
     _id: "",
     name: "",
-    content: "",
-    views: 0,
-    status: "draft",
-    featuredImage: "",
-    category: {
-      _id: "",
-      name: "",
-      icon: "",
-      createdBy: "",
-      isDeleted: false,
-      createdAt: "",
-      updatedAt: "",
-      __v: 0,
-    },
-    createdBy: {
-      _id: "",
-      name: "",
-      email: "",
-      password: "",
-      role: "",
-      phone: "",
-      isAdmin: false,
-      isVerified: false,
-      imageUrl: "",
-      createdAt: "",
-      updatedAt: "",
-      __v: 0,
-      isDeleted: false,
-    },
-    comments: true,
-    isDeleted: false,
-    createdAt: "",
-    updatedAt: "",
-    __v: 0,
+    icon: "",
   },
+  featuredImage: "",
+  status: "draft",
+  comments: false,
+  websites: [],
+  metaTitle: "",
+  metaDescription: "",
+  focusKeywords: [],
+  createdBy: {
+    _id: "",
+    name: "",
+    imageUrl: "",
+  },
+  views: 0,
+  isLoading: false,
+  error: null
+};
+
+const SinglePostSlice = createSlice({
+  name: "SinglePost",
+  initialState,
   reducers: {
+    setPost: (state, action) => {
+      return { ...state, ...action.payload, isLoading: false, error: null };
+    },
     updatePost: (state, action) => {
-      // Object.assign can handle nested objects, but ensure it's done carefully
-      Object.assign(state, action.payload);
+      return { ...state, ...action.payload, isLoading: false, error: null };
+    },
+    updateFeaturedImage: (state, action) => {
+      state.featuredImage = action.payload;
     },
     updatePostContent: (state, action) => {
       state.content = action.payload;
@@ -51,25 +46,32 @@ const singlePostSlice = createSlice({
     updatePostStatus: (state, action) => {
       state.status = action.payload;
     },
-    updateFeaturedImage: (state, action) => {
-      state.featuredImage = action.payload;
-    },
     updatePostCategory: (state, action) => {
       state.category = { ...state.category, ...action.payload };
     },
-    updatePostCreator: (state, action) => {
-      state.createdBy = { ...state.createdBy, ...action.payload };
+    clearPost: () => {
+      return initialState;
     },
+    setLoading: (state, action) => {
+      state.isLoading = action.payload;
+    },
+    setError: (state, action) => {
+      state.error = action.payload;
+      state.isLoading = false;
+    }
   },
 });
 
-export const {
-  updatePost,
+export const { 
+  setPost, 
+  updatePost, 
+  updateFeaturedImage,
   updatePostContent,
   updatePostStatus,
-  updateFeaturedImage,
   updatePostCategory,
-  updatePostCreator,
-} = singlePostSlice.actions;
+  clearPost, 
+  setLoading, 
+  setError 
+} = SinglePostSlice.actions;
 
-export default singlePostSlice.reducer;
+export default SinglePostSlice.reducer;
