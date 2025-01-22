@@ -6,7 +6,7 @@ import axiosInstance from "../../../Utils/axios";
 import { updateGlobal } from "../../Global/GlobalSlice";
 import { showSuccessAlert, showErrorAlert } from "../../../Utils/SwalAlert";
 
-const ItemEditForm = ({ item, toggle, setToggle, onClose }) => {
+const ItemEditForm = ({ item, toggle, setToggle, onClose,tone,category,type }) => {
   const [editedItem, setEditedItem] = useState(item);
   const dispatch = useDispatch();
 
@@ -33,7 +33,13 @@ const ItemEditForm = ({ item, toggle, setToggle, onClose }) => {
     try {
       const formData = new FormData();
       formData.append("name", editedItem.name);
-      formData.append("tags", JSON.stringify(editedItem.tags));
+      // Send tags as an array instead of a stringified array
+      editedItem.tags.forEach(tag => {
+        formData.append("tags[]", tag);
+      });
+      formData.append("tone", tone);
+      formData.append("category", category);
+      formData.append("type", type);
 
       if (editedItem.file) {
         formData.append("file", editedItem.file);

@@ -139,7 +139,10 @@ const SingleProductTopeSection = () => {
         try {
             const formData = new FormData();
             formData.append('name', newItem.name);
-            formData.append('tags', JSON.stringify(newItem.tags));
+            // Append tags as individual array items
+            newItem.tags.forEach(tag => {
+                formData.append('tags[]', tag);
+            });
             if (newItem.file) {
                 formData.append('file', newItem.file);
             }
