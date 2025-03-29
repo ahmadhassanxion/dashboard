@@ -16,6 +16,7 @@ const AddProduct = () => {
   const [product, setProduct] = useState({
     name: "",
     description: "",
+    slug:"",
     tone: "",
     type: "",
     category: "",
@@ -51,6 +52,7 @@ const AddProduct = () => {
         ...product.items,
         { 
           name: "", 
+          slug: "",
           tags: [], 
           file: null, 
           uploadedBy: userId,
@@ -69,6 +71,7 @@ const AddProduct = () => {
       // Validate product fields
       if (
         !product.name ||
+        
         !product.description ||
         !product.tone ||
         !product.type ||
@@ -76,6 +79,10 @@ const AddProduct = () => {
       ) {
         showErrorAlert("Please fill all product fields");
         return;
+      }
+
+      if (product.slug === "") {
+        product.slug = product.name.toLowerCase().replace(/\s+/g, '-');
       }
 
       if (product.items.length === 0) {
@@ -86,6 +93,7 @@ const AddProduct = () => {
       // Create a FormData object to prepare data for the product
       const formData = new FormData();
       formData.append("name", product.name);
+      formData.append("slug", product.slug);
       formData.append("userId", UserData._id);
       formData.append("description", product.description);
       formData.append("tone", product.tone);
@@ -101,6 +109,7 @@ const AddProduct = () => {
           // Prepare form data for each item separately
           const itemFormData = new FormData();
           itemFormData.append("name", item.name);
+
           itemFormData.append("uploadedBy", item.uploadedBy);
           itemFormData.append("type", product.type);
           itemFormData.append("category", product.category);
@@ -150,6 +159,7 @@ const AddProduct = () => {
         setToggle(false);
         setProduct({
           name: "",
+          slug: "",
           description: "",
           tone: "",
           type: "",
@@ -228,6 +238,24 @@ const AddProduct = () => {
                     onChange={handleProductChange}
                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5  "
                     placeholder="Product Name"
+                    required
+                  />
+                </div>
+                <div className="col-span-2">
+                  <label
+                    htmlFor="slug"
+                    className="block mb-2 text-sm font-medium text-gray-900 "
+                  >
+                    Slug
+                  </label>
+                  <input
+                    type="text"
+                    name="slug"
+                    id="slug"
+                    value={product.slug}
+                    onChange={handleProductChange}
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5  "
+                    placeholder="Product Slug"
                     required
                   />
                 </div>

@@ -18,6 +18,7 @@ const SingleProductTopeSection = () => {
     const UserData = JSON.parse(localStorage.getItem("userData"));
     const [editedProduct, setEditedProduct] = useState({
         name: product?.name || "",
+        slug: product?.slug || "",
         description: product?.description || "",
         screenshot: product?.screenshot || "",
         type: product?.type || "",
@@ -41,6 +42,7 @@ const SingleProductTopeSection = () => {
     const handleEdit = () => {
         setEditedProduct({
             name: product?.name || "",
+            slug: product?.slug || "",
             description: product?.description || "",
             screenshot: product?.screenshot || "",
             type: product?.type || "",
@@ -56,6 +58,10 @@ const SingleProductTopeSection = () => {
 
     const handleSaveEdit = async () => {
         try {
+
+            if(editedProduct.slug === ""){
+                editedProduct.slug = editedProduct.name.toLowerCase().replace(/\s+/g, '-');
+            }
             let screenshotUrl = editedProduct.screenshot;
             
             // If there's a new screenshot file, upload it first
@@ -287,6 +293,18 @@ const SingleProductTopeSection = () => {
                                     type="text"
                                     name="name"
                                     value={editedProduct.name}
+                                    onChange={handleInputChange}
+                                    className="w-full p-2 border rounded focus:ring-blue-500 focus:border-blue-500"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Slug
+                                </label>
+                                <input
+                                    type="text"
+                                    name="slug"
+                                    value={editedProduct.slug}
                                     onChange={handleInputChange}
                                     className="w-full p-2 border rounded focus:ring-blue-500 focus:border-blue-500"
                                 />

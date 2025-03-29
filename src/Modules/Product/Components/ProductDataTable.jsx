@@ -6,7 +6,7 @@ import DeleteBtn from "../../../Components/DeleteBtn";
 import EditBtn from "../../../Components/EditBtn";
 import { useSelector } from "react-redux";
 import hasPermission from "../../../helper/PermissionCheck";
-import { render } from "timeago.js";
+// import { render } from "timeago.js";
 const canEditProduct = hasPermission("products", "edit");
 const canDeleteProduct = hasPermission("products", "delete");
 

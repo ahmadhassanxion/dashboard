@@ -5,6 +5,7 @@ const SingleProductSlice = createSlice({
   initialState: {
     _id: "",
     name: "",
+    slug: "",
     description: "",
     items: [],
     createdBy: {

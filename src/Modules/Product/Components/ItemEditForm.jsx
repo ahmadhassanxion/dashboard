@@ -1,21 +1,33 @@
 /* eslint-disable react/prop-types */
-import React, { useState } from "react";
+import  { useState } from "react";
 import { useDispatch } from "react-redux";
 import { TagsInput } from "react-tag-input-component";
 import axiosInstance from "../../../Utils/axios";
 import { updateGlobal } from "../../Global/GlobalSlice";
 import { showSuccessAlert, showErrorAlert } from "../../../Utils/SwalAlert";
 
-const ItemEditForm = ({ item, toggle, setToggle, onClose,tone,category,type }) => {
+const ItemEditForm = ({ item, toggle, setToggle, tone,category,type }) => {
   const [editedItem, setEditedItem] = useState(item);
   const dispatch = useDispatch();
 
   const handleItemChange = (e) => {
     const { name, value, type, files } = e.target;
-    setEditedItem({
-      ...editedItem,
-      [name]: type === "file" ? files[0] : value,
-    });
+    
+    if (name === "name" && value.includes(",")) {
+      // Split the string by commas and trim whitespace
+      const newTags = value.split(",").map(tag => tag.trim()).filter(tag => tag);
+      // Add these tags to existing tags
+      setEditedItem(prev => ({
+        ...prev,
+        tags: [...new Set([...prev.tags, ...newTags])], // Using Set to remove duplicates
+        [name]: "" // Clear the name field after converting to tags
+      }));
+    } else {
+      setEditedItem({
+        ...editedItem,
+        [name]: type === "file" ? files[0] : value,
+      });
+    }
   };
 
   const handleTagChange = (newTags) => {
