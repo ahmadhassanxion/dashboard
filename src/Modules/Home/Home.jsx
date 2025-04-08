@@ -40,20 +40,7 @@ const Home = () => {
     fetchData();
   }, []);
 
-  // Set up WebSocket for real-time updates
-  useEffect(() => {
-    const ws = new WebSocket(`ws://${window.location.host}/ws/dashboard`);
-
-    ws.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      setStats(prev => ({
-        ...prev,
-        ...data
-      }));
-    };
-
-    return () => ws.close();
-  }, []);
+ 
 
   const formatNumber = (num) => {
     return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
