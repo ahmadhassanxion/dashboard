@@ -295,9 +295,8 @@ const AddProduct = () => {
                   >
                     <option value="">Select Tone</option>
                     <option value="standard">Standard</option>
-                    <option value="sharp">Sharp</option>
-                    <option value="rounded">Rounded</option>
-                    <option value="duoTone">DuoTone</option>
+                    <option value="flat">Flat</option>
+                    <option value="isometric">Isometric</option>
                   </select>
                 </div>
 
@@ -319,7 +318,9 @@ const AddProduct = () => {
                     <option value="">Select Type</option>
                     <option value="solid">Solid</option>
                     <option value="semiSolid">Semi-Solid</option>
-                    <option value="semiSolid">Stroke</option>
+                    <option value="stroke">Stroke</option>
+                    <option value="line">Line</option>
+                    <option value="colorLine">ColorLine</option>
                   </select>
                 </div>
 

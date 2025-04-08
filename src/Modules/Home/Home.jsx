@@ -174,13 +174,13 @@ const Home = () => {
             <Card className="bg-orange-500 text-white">
               <CardHeader className="flex items-center justify-between p-4">
                 <div>
-                  <Typography color="white" className="font-medium">
+                  <Typography color="black" className="font-medium">
                     Recent Activity
                   </Typography>
-                  <Typography color="white" className="text-2xl font-bold">
+                  <Typography color="black" className="text-2xl font-bold">
                     {formatNumber(stats.recentProducts.length)}
                   </Typography>
-                  <Typography color="white" className="text-sm">
+                  <Typography color="black" className="text-sm">
                     +4.1% from last month
                   </Typography>
                 </div>
