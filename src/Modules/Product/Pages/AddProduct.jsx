@@ -3,7 +3,7 @@ import axiosInstance from "../../../Utils/axios";
 import { showSuccessAlert, showErrorAlert } from "../../../Utils/SwalAlert";
 import { useDispatch } from "react-redux";
 import { updateGlobal } from "../../Global/GlobalSlice";
-import { TagsInput } from "react-tag-input-component";
+import CustomTagsInput from "../Components/CustomTagInput";
 
 const AddProduct = () => {
   const [toggle, setToggle] = useState(false);
@@ -381,13 +381,12 @@ const AddProduct = () => {
                       >
                         Tags
                       </label>
-                      <TagsInput
+                      <CustomTagsInput
                         value={item.tags}
                         onChange={(newTags) => handleTagChange(index, newTags)}
-                        name={`tags-${index}`}
-                        placeHolder="Add a tag"
-                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5  "
+                        placeHolder="Enter tags (use comma to separate)"
                       />
+                      <span className="text-sm text-gray-500">Press enter or comma to add tags</span>
                     </div>
 
                     <div className="col-span-2">

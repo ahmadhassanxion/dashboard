@@ -8,7 +8,7 @@ import {format} from "timeago.js";
 import { showSuccessAlert, showErrorAlert } from "../../../Utils/SwalAlert";
 import { FaDownload, FaPlus, FaTrash } from "react-icons/fa6";
 import { FaEdit } from "react-icons/fa";
-
+import CustomTagsInput from "./CustomTagInput";
 const SingleProductTopeSection = () => {
     const product = useSelector(state => state.SingleProductSlice);
     const dispatch = useDispatch();
@@ -466,7 +466,7 @@ const SingleProductTopeSection = () => {
                                     type="text"
                                     value={newItem.name}
                                     onChange={(e) => setNewItem({ ...newItem, name: e.target.value })}
-                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                    className="mt-1 px-2 py-3 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                                 />
                             </div>
                             <div>
@@ -480,12 +480,18 @@ const SingleProductTopeSection = () => {
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">Tags</label>
-                                <TagsInput
+                                {/* <TagsInput
                                     value={newItem.tags}
                                     onChange={(tags) => setNewItem({ ...newItem, tags })}
                                     placeHolder="Enter tags"
+                                /> */}
+                                <CustomTagsInput
+                                  value={newItem.tags}
+                                  onChange={(tags) => setNewItem({ ...newItem, tags })}
+                                  placeHolder="Enter tags (use comma to separate)"
                                 />
-                                <span className="text-sm text-gray-500">Press enter to add tags</span>
+                                {/* <span className="text-sm text-gray-500">Press enter to add tags</span> */}
+                                <span className="text-sm text-gray-500">Press enter or comma to add tags</span>
                             </div>
                             <div className="space-y-2">
                                 <div className="text-sm text-gray-600">
